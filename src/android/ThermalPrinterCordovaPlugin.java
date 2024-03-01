@@ -166,11 +166,32 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
 
     private void bytesToHexadecimalString(CallbackContext callbackContext, JSONObject data) throws JSONException {
         EscPosPrinter printer = this.getPrinter(callbackContext, data);
+            JSONObject obj = data;
+            String data_type =  obj.getString("data_type");
         try {
-            byte[] bytes = (byte[]) data.get("bytes");
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+             byte[] bytes = (byte[]) data.get("bytes");
+             Bitmap decodedByte = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+             
+            //ถ้า data_type = "print_and_cut" ให้พิมพ์แล้วตัดให้ด้วย
+            if(data_type.equals("print_and_cut")){
+
+                  int width = decodedByte.getWidth(),
+                  height = decodedByte.getHeight();
+
+                  StringBuilder textToPrint = new StringBuilder();
+
+                 for(int y = 0; y < height; y += 256) {
+                   Bitmap bitmap = Bitmap.createBitmap(decodedByte, 0, y, width, (y + 256 >= height) ? height - y : 256);
+                  // textToPrint.append("[L]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, bitmap) + "</img>\n");
+                  printer.printFormattedText("[L]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, bitmap) + "</img>\n");
+                 }
+                printer.printFormattedTextAndCut("[C]\n");
+                callbackContext.success();
+            }else{
             callbackContext.success(PrinterTextParserImg.bitmapToHexadecimalString(printer, decodedByte));
-        } catch (Exception e) {
+            }
+            
+      } catch (Exception e) {
             callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
                 put("error", e.getMessage());
             }}));
