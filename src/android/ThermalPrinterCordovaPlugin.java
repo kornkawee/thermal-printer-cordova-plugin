@@ -172,7 +172,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
              byte[] bytes = (byte[]) data.get("bytes");
              Bitmap decodedByte = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
              
-            //ถ้า data_type = "print_and_cut" ให้พิมพ์แล้วตัดให้ด้วย
+            //ถ้า data_type = "print_and_cut" พิมพ์แล้วตัดด้วย
             if(data_type.equals("print_and_cut")){
 
                   int width = decodedByte.getWidth(),
@@ -182,10 +182,16 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
 
                  for(int y = 0; y < height; y += 256) {
                    Bitmap bitmap = Bitmap.createBitmap(decodedByte, 0, y, width, (y + 256 >= height) ? height - y : 256);
-                  // textToPrint.append("[L]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, bitmap) + "</img>\n");
-                  printer.printFormattedText("[L]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, bitmap) + "</img>\n");
+                   textToPrint.append("[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, bitmap) + "</img>\n");
+                // printer.printFormattedText("[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, bitmap) + "</img>\n");
+
                  }
-                printer.printFormattedTextAndCut("[C]\n");
+
+                textToPrint.append("[C]\n");
+                textToPrint.append("[C]\n");
+                textToPrint.append("[C]\n"); 
+                // printer.printFormattedTextAndCut("[C]\n");
+                printer.printFormattedTextAndCut(textToPrint.toString());
                 callbackContext.success();
             }else{
             callbackContext.success(PrinterTextParserImg.bitmapToHexadecimalString(printer, decodedByte));
