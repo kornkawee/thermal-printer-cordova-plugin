@@ -384,7 +384,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                 try { if (bluetoothDevice.getName().equals(id)) { return bluetoothConnection; } } catch (Exception ignored) {}
             }
         } else if (type.equals("tcp")) {
-            return new TcpConnection(address, port);
+            return new TcpConnection(address, port,40);
         } else {
             UsbConnections printerConnections = new UsbConnections(this.cordova.getActivity());
             for (UsbConnection usbConnection : printerConnections.getList()) {
